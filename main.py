@@ -146,10 +146,12 @@ def tick(this):
             return
 
         isMining = True
-        try:
-            minerBot.bot.dig(block, "ignore", "raycast", miningCallback)
-        except Exception as e:
-            pass
+        @AsyncTask(start=True)
+        def mine(task):
+            try:
+                minerBot.bot.dig(block, "ignore", "raycast", miningCallback)
+            except Exception as e:
+                pass
 
 print("Zaczynam kopać!")
 timer = BackgroundTimer()
