@@ -87,6 +87,7 @@ def minLoop(task):
     global minPassed
     while True:
         time.sleep(15)
+        print("Minute")
         minPassed = True
 
 def miningCallback(x, y):
@@ -145,7 +146,7 @@ def tick(this):
 
 # Prevent script from finishing
 while True:
-    input = input("Wpisz stop aby zakończyć kopanie!: ")
+    input = input("Wpisz stop aby zakończyć kopanie!: \n")
     if input == "stop":
         break
 
