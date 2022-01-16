@@ -1,4 +1,6 @@
+import asyncio
 from javascript import require, once, On, AsyncTask
+from threading import Thread
 import time
 import sys
 
@@ -82,13 +84,21 @@ isMining = False
 
 minPassed: bool = False
 
-@AsyncTask(start=True)
-def minLoop(task):
+def timeLoop():
     global minPassed
     while True:
         time.sleep(15)
         print("Minute")
         minPassed = True
+
+
+class BackgroundTimer(Thread):   
+    def run(self):
+        global minPassed
+        while True:
+            time.sleep(15)
+            print("Minute")
+            minPassed = True
 
 def miningCallback(x, y):
     global isMining
@@ -141,8 +151,10 @@ def tick(this):
         except Exception as e:
             pass
 
+print("Zaczynam kopać!")
+timer = BackgroundTimer()
+timer.start()
 
-# print("Zaczynam kopać!")
 
 # Prevent script from finishing
 while True:
