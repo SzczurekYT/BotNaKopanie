@@ -1,8 +1,6 @@
-import asyncio
 from javascript import require, once, On, AsyncTask
 from threading import Thread
 import time
-import sys
 
 from minerbot import MinerBot
 
@@ -79,9 +77,6 @@ minerBot.bot.setControlState("sneak", True)
 # Wait to make sure everything is loaded.
 time.sleep(2)
 
-# Define is mining
-isMining = False
-
 minPassed: bool = False
 
 def timeLoop():
@@ -100,16 +95,12 @@ class BackgroundTimer(Thread):
             print("Minute")
             minPassed = True
 
-def miningCallback(x, y):
-    global isMining
-    isMining = False
-
 # The tick
 @On(minerBot.bot, "physicsTick")
 def tick(this):
 
-    global isMining
-    if isMining:
+    targetBlock = minerBot.bot.targetDigBlock
+    if targetBlock:
 
         # Prevent mining throught walls
         block = minerBot.bot.blockAtCursor(5)
@@ -132,24 +123,28 @@ def tick(this):
             minerBot.bot.tossStack(held)
             minerBot.equipPick()
 
+
+        # Make cobblex
         if minerBot.bot.inventory.count(21) >= 640:
             minerBot.makeCobblex()
 
+        # Empty inventory
         global minPassed
         if minPassed:
             minerBot.emptyInventory(cobblex)
-
+        
+        # miner
         block = minerBot.bot.blockAtCursor(5)
         if block == None:
             return
         if block.stateId == None:
             return
 
-        isMining = True
         @AsyncTask(start=True)
         def mine(task):
             try:
-                minerBot.bot.dig(block, "ignore", "raycast", miningCallback)
+                minerBot.bot.dig(block, "ignore", "raycast")
+                print("Hello")
             except Exception as e:
                 pass
 
