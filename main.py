@@ -102,7 +102,16 @@ def tick(this):
         if block.position.toString() != miningBlock.position.toString():
             minerBot.bot.stopDigging()
         
-    else:
+
+print("Zaczynam kopać!")
+timer = BackgroundTimer()
+timer.start()
+
+
+while True:
+
+    targetBlock = minerBot.bot.targetDigBlock
+    if not targetBlock:
         # Equip new pick if needed
         held = minerBot.bot.heldItem
         if held == None:
@@ -120,7 +129,6 @@ def tick(this):
             minerBot.makeCobblex()
 
         # Empty inventory
-        global minPassed
         if minPassed:
             minerBot.emptyInventory(cobblex)
             minPassed = False
@@ -128,9 +136,9 @@ def tick(this):
         # miner
         block = minerBot.bot.blockAtCursor(5)
         if block == None:
-            return
+            continue
         if block.stateId == None:
-            return
+            continue
 
         @AsyncTask(start=True)
         def mine(task):
@@ -139,16 +147,17 @@ def tick(this):
             except Exception as e:
                 pass
 
-print("Zaczynam kopać!")
-timer = BackgroundTimer()
-timer.start()
+    time.sleep(0.05)
 
 
-# Prevent script from finishing
-while True:
-    input = input("Wpisz stop aby zakończyć kopanie!: \n")
-    if input == "stop":
-        minerBot.bot.quit()
-        exit(0)
+
+
+
+
+
+    # input = input("Wpisz stop aby zakończyć kopanie!: \n")
+    # if input == "stop":
+    #     minerBot.bot.quit()
+    #     exit(0)
 
 
