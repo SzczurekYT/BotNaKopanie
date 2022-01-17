@@ -9,7 +9,7 @@ class MinerBot:
         try:
             self.bot = mineflayer.createBot(
                 {
-                    "host": "thevoid.pl",
+                    "host": "localhost",
                     "port": 25565,
                     "username": username,
                     "password": password,
@@ -53,22 +53,37 @@ class MinerBot:
             yaw = self.bot.entity.yaw
 
             # Look down
-            self.bot.look(yaw, -90, True)
-            print("Look down")
-            time.sleep(1)
+            self.bot.look(yaw, -1.57, True)
+            # time.sleep(1)
 
             # Drop items
             for item in toDrop:
-                # if item["type"] == 686:
-                #     self.bot.toss(item["type"], None, item["count"] - 5)
-                # else:
-                #     self.bot.tossStack(item)
-                self.bot.tossStack(item)
-                time.sleep(0.1)
+                if item["type"] == 686:
+                    self.bot.toss(item["type"], None, item["count"] - 5)
+                else:
+                    self.bot.tossStack(item)
+                # time.sleep(0.1)
 
             # Look up (forward)
             self.bot.look(yaw, 0, True)
-            print("Look up")
-            time.sleep(1)
-            print("Dropped all resources!")
+            # time.sleep(1)
+
+    def fixPick(self):
+        diamonds = self.bot.inventory.findInventoryItem(686)
+        if not diamonds:
+            return
+        block = self.bot.findBlock(
+            {
+                "matching": lambda block: block["type"] == 346
+                or block["type"] == 347
+                or block["type"] == 348,
+                "maxDistance": 4,
+            }
+        )
+        if block != None:
+            # print(block)
+            self.bot.lookAt(block.position)
+            anvil = self.bot.openAnvil(block)
+            print(anvil)
+            # anvil.combine(self.bot.heldItem, diamonds)
 

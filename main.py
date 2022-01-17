@@ -81,7 +81,6 @@ class BackgroundTimer(Thread):
         global minPassed
         while True:
             time.sleep(60)
-            print("Minute")
             minPassed = True
 
 # The tick
@@ -111,6 +110,9 @@ def tick(this):
         elif held["type"] != 721:
             minerBot.bot.tossStack(held)
             minerBot.equipPick()
+        else:
+            if 1561 - held.durabilityUsed <= 100:
+                minerBot.fixPick()
 
 
         # Make cobblex
