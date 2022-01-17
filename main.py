@@ -55,8 +55,6 @@ def error(this, err):
 def kick(this, reason, loggedIn):
     print("Kick with reason: ")
     print(reason)
-    for text in reason:
-        print(text)
 
 # Accept the resourcepack
 @On(minerBot.bot, "resourcePack")
@@ -71,27 +69,18 @@ def die(this):
     print("Bot: Zginąłem!")
     # sys.exit()
 
-# Sneak
-minerBot.bot.setControlState("sneak", True)
 
 # Wait to make sure everything is loaded.
 time.sleep(2)
 
 minPassed: bool = False
 
-def timeLoop():
-    global minPassed
-    while True:
-        time.sleep(15)
-        print("Minute")
-        minPassed = True
-
 
 class BackgroundTimer(Thread):   
     def run(self):
         global minPassed
         while True:
-            time.sleep(15)
+            time.sleep(60)
             print("Minute")
             minPassed = True
 
@@ -132,6 +121,7 @@ def tick(this):
         global minPassed
         if minPassed:
             minerBot.emptyInventory(cobblex)
+            minPassed = False
         
         # miner
         block = minerBot.bot.blockAtCursor(5)
@@ -144,7 +134,6 @@ def tick(this):
         def mine(task):
             try:
                 minerBot.bot.dig(block, "ignore", "raycast")
-                print("Hello")
             except Exception as e:
                 pass
 
@@ -157,5 +146,7 @@ timer.start()
 while True:
     input = input("Wpisz stop aby zakończyć kopanie!: \n")
     if input == "stop":
-        break
+        minerBot.bot.quit()
+        exit(0)
+
 

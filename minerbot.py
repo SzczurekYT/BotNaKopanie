@@ -9,7 +9,7 @@ class MinerBot:
         try:
             self.bot = mineflayer.createBot(
                 {
-                    "host": "localhost",
+                    "host": "thevoid.pl",
                     "port": 25565,
                     "username": username,
                     "password": password,
@@ -63,7 +63,6 @@ class MinerBot:
                 #     self.bot.toss(item["type"], None, item["count"] - 5)
                 # else:
                 #     self.bot.tossStack(item)
-                print(item)
                 self.bot.tossStack(item)
                 time.sleep(0.1)
 
@@ -71,4 +70,5 @@ class MinerBot:
             self.bot.look(yaw, 0, True)
             print("Look up")
             time.sleep(1)
+            print("Dropped all resources!")
 
