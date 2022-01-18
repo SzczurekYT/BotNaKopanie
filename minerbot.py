@@ -1,5 +1,4 @@
 from javascript import require, On
-import time
 
 mineflayer = require("mineflayer")
 
@@ -28,10 +27,10 @@ class MinerBot:
     def equipPick(self):
         tool = self.bot.inventory.findInventoryItem(721)
         if tool:
-            print("Bot: Wziąłem kolejny kilof.")
             self.bot.equip(tool, "hand")
 
     def makeCobblex(self):
+        # Send /cx command that creates cobbleX
         self.bot.chat("/cx")
 
     def emptyInventory(self, cobblex: bool):
@@ -54,26 +53,28 @@ class MinerBot:
 
             # Look down
             self.bot.look(yaw, -1.57, True)
-            # time.sleep(1)
 
             # Drop items
             for item in toDrop:
                 if item["type"] == 686:
-                    self.bot.toss(item["type"], None, item["count"] - 5)
+                    self.bot.toss(item["type"], None, item["count"] - 4)
                 else:
                     self.bot.tossStack(item)
-                # time.sleep(0.1)
 
             # Look up (forward)
             self.bot.look(yaw, 0, True)
-            # time.sleep(1)
 
     def repairPick(self):
+        yaw = self.bot.entity.yaw
+        pitch = self.bot.entity.pitch
         diamonds = self.bot.inventory.findInventoryItem(686)
         if not diamonds:
             return
-        block = self.bot.findBlock({"matching": [341, 340, 339], "maxDistance": 4})
+        block = self.bot.findBlock({"matching": [341, 340, 339], "maxDistance": 5})
         if block:
             anvil = self.bot.openAnvil(block)
-            anvil.combine(self.bot.heldItem, diamonds)
+            anvil.combine(self.bot.heldItem, diamonds, "")
+            anvil.close()
+            self.equipPick()
+            self.bot.look(yaw, pitch, False)
 
