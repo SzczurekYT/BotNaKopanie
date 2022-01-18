@@ -68,22 +68,12 @@ class MinerBot:
             self.bot.look(yaw, 0, True)
             # time.sleep(1)
 
-    def fixPick(self):
+    def repairPick(self):
         diamonds = self.bot.inventory.findInventoryItem(686)
         if not diamonds:
             return
-        block = self.bot.findBlock(
-            {
-                "matching": lambda block: block["type"] == 346
-                or block["type"] == 347
-                or block["type"] == 348,
-                "maxDistance": 4,
-            }
-        )
-        if block != None:
-            # print(block)
-            self.bot.lookAt(block.position)
+        block = self.bot.findBlock({"matching": [341, 340, 339], "maxDistance": 4})
+        if block:
             anvil = self.bot.openAnvil(block)
-            print(anvil)
-            # anvil.combine(self.bot.heldItem, diamonds)
+            anvil.combine(self.bot.heldItem, diamonds)
 

@@ -121,7 +121,7 @@ while True:
             minerBot.equipPick()
         else:
             if 1561 - held.durabilityUsed <= 100:
-                minerBot.fixPick()
+                minerBot.repairPick()
 
 
         # Make cobblex
