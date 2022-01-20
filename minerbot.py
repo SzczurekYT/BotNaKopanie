@@ -1,4 +1,6 @@
+import math
 from javascript import require, On
+import time
 
 mineflayer = require("mineflayer")
 
@@ -8,7 +10,7 @@ class MinerBot:
         try:
             self.bot = mineflayer.createBot(
                 {
-                    "host": "localhost",
+                    "host": "thevoid.pl",
                     "port": 25565,
                     "username": username,
                     "password": password,
@@ -35,6 +37,8 @@ class MinerBot:
 
     def emptyInventory(self, cobblex: bool):
 
+        print("Dropping inventory!")
+
         # Ids of items to drop
         ids = [684, 585, 692, 696, 687, 686, 792, 235, 734, 234]
 
@@ -52,19 +56,25 @@ class MinerBot:
             yaw = self.bot.entity.yaw
 
             # Look down
-            self.bot.look(yaw, -1.57, True)
+            self.bot.look(yaw, -math.pi / 2, False)
+            time.sleep(1)
 
             # Drop items
             for item in toDrop:
+                print(item["type"])
                 if item["type"] == 686:
-                    self.bot.toss(item["type"], None, item["count"] - 4)
+                    if item.count >= 5:
+                        self.bot.toss(686, None, item.count - 4)
                 else:
                     self.bot.tossStack(item)
-
+                time.sleep(0.3)
             # Look up (forward)
-            self.bot.look(yaw, 0, True)
+            self.bot.look(yaw, 0, False)
+            time.sleep(1)
+            print("Dropped all items!")
 
     def repairPick(self):
+        print("Próbuję naprawić kilof.")
         yaw = self.bot.entity.yaw
         pitch = self.bot.entity.pitch
         diamonds = self.bot.inventory.findInventoryItem(686)
@@ -73,8 +83,10 @@ class MinerBot:
         block = self.bot.findBlock({"matching": [341, 340, 339], "maxDistance": 5})
         if block:
             anvil = self.bot.openAnvil(block)
-            anvil.combine(self.bot.heldItem, diamonds, "")
+            anvil.combine(self.bot.heldItem, diamonds)
+            print("Naprawiono kilof.")
             anvil.close()
             self.equipPick()
-            self.bot.look(yaw, pitch, False)
+            self.bot.look(yaw, pitch, True)
+            time.sleep(1)
 
