@@ -82,7 +82,13 @@ class MinerBot:
         block = self.bot.findBlock({"matching": [341, 340, 339], "maxDistance": 5})
         if block:
             anvil = self.bot.openAnvil(block)
-            anvil.combine(self.bot.heldItem, diamonds)
+            try:
+                anvil.combine(self.bot.heldItem, diamonds)
+            except Exception as e:
+                print("Nie udało się naprawić kilofa.")
+                self.bot.look(yaw, pitch, True)
+                return False
+                
             print("Naprawiono kilof.")
             anvil.close()
             self.equipPick()
