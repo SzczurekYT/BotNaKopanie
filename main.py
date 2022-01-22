@@ -125,6 +125,8 @@ print("Zaczynam kopać!")
 timer = BackgroundTimer()
 timer.start()
 
+yaw = minerBot.bot.entity.yaw
+minerBot.bot.look(yaw, 0, False)
 
 while True:
 
@@ -139,7 +141,8 @@ while True:
             minerBot.equipPick()
         else:
             if 1561 - held.durabilityUsed <= 100:
-                minerBot.repairPick()
+                if not minerBot.repairPick():
+                    stop()
 
         # Make cobblex
         if minerBot.bot.inventory.count(21) >= 640:

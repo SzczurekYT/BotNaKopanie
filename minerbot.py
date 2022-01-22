@@ -56,12 +56,11 @@ class MinerBot:
             yaw = self.bot.entity.yaw
 
             # Look down
-            self.bot.look(yaw, -math.pi / 2, False)
+            self.bot.look(yaw, -math.pi / 2, True)
             time.sleep(1)
 
             # Drop items
             for item in toDrop:
-                print(item["type"])
                 if item["type"] == 686:
                     if item.count >= 5:
                         self.bot.toss(686, None, item.count - 4)
@@ -69,11 +68,11 @@ class MinerBot:
                     self.bot.tossStack(item)
                 time.sleep(0.3)
             # Look up (forward)
-            self.bot.look(yaw, 0, False)
+            self.bot.look(yaw, 0, True)
             time.sleep(1)
             print("Dropped all items!")
 
-    def repairPick(self):
+    def repairPick(self) -> bool:
         print("Próbuję naprawić kilof.")
         yaw = self.bot.entity.yaw
         pitch = self.bot.entity.pitch
@@ -89,4 +88,8 @@ class MinerBot:
             self.equipPick()
             self.bot.look(yaw, pitch, True)
             time.sleep(1)
+            return True
+        else:
+            print("Brak kowadła, nie naprawiono kilofa.")
+            return False
 
