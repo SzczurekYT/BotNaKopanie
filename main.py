@@ -1,4 +1,4 @@
-from javascript import require, once, On, AsyncTask
+from javascript import require, once, On, AsyncTask, off
 from threading import Thread
 import time
 
@@ -16,19 +16,18 @@ print("\033[H\033[J", end="")
 # Cobblex
 while True:
     text = input("Czy mam automatycznie tworzyć CobbleX: (tak/nie): ")
-    match text:
-        case "tak":
-            cobblex = True
-        case "nie":
-            cobblex = False
-        case _:
-            print("Wpisz 'tak' lub 'nie' ")
-            continue
+    if text == "tak":
+        cobblex = True
+    elif text == "nie":
+        cobblex = False
+    else:
+        print("Wpisz 'tak' lub 'nie' ")
+        continue
     break
 
 # Import
 mineflayer = require("mineflayer")
-viewer = require('prismarine-viewer').mineflayer
+viewer = require("prismarine-viewer").mineflayer
 
 # Bot creation
 print("Tworzenie bota.")
@@ -37,7 +36,7 @@ print("Bot utworzony")
 
 # Wait to login
 once(minerBot.bot, "login")
-print("Bot wszedłe na serwer.")
+print("Bot wszedł na serwer.")
 
 # Launch the viewer
 minerBot.launchViewer()
@@ -49,12 +48,18 @@ minerBot.launchViewer()
 def error(this, err):
     print("Error")
     print(err)
+    stop()
+
 
 # Handle kick
 @On(minerBot.bot, "kicked")
 def kick(this, reason, loggedIn):
     print("Kick with reason: ")
     print(reason)
+    stop()
+    # for text in reason["extra"]:
+    #     print(text["text"])
+
 
 # Accept the resourcepack
 @On(minerBot.bot, "resourcePack")
@@ -62,12 +67,23 @@ def acceptResourcepack(this, url, hash):
     print("Akceptowanie resourcepacka!")
     minerBot.bot.acceptResourcePack()
 
+
 # Handle death
 @On(minerBot.bot, "death")
 def die(this):
-    minerBot.bot.quit()
+    stop()
     print("Bot: Zginąłem!")
     # sys.exit()
+
+
+def stop() -> None:
+    off(minerBot.bot, "error", error)
+    off(minerBot.bot, "kicked", kick)
+    off(minerBot.bot, "resourcePack", acceptResourcepack)
+    off(minerBot.bot, "death", die)
+    off(minerBot.bot, "physicsTick", tick)
+    minerBot.bot.quit()
+    exit()
 
 
 # Wait to make sure everything is loaded.
@@ -76,12 +92,13 @@ time.sleep(2)
 minPassed: bool = False
 
 
-class BackgroundTimer(Thread):   
+class BackgroundTimer(Thread):
     def run(self):
         global minPassed
         while True:
             time.sleep(60)
             minPassed = True
+
 
 # The tick
 @On(minerBot.bot, "physicsTick")
@@ -97,12 +114,24 @@ def tick(this):
         if block.stateId == None:
             return
         miningBlock = minerBot.bot.targetDigBlock
-        if not miningBlock: return
+        if not miningBlock:
+            return
 
         if block.position.toString() != miningBlock.position.toString():
             minerBot.bot.stopDigging()
-        
-    else:
+
+
+print("Zaczynam kopać!")
+timer = BackgroundTimer()
+timer.start()
+
+yaw = minerBot.bot.entity.yaw
+minerBot.bot.look(yaw, 0, False)
+
+while True:
+
+    targetBlock = minerBot.bot.targetDigBlock
+    if not targetBlock:
         # Equip new pick if needed
         held = minerBot.bot.heldItem
         if held == None:
@@ -112,25 +141,24 @@ def tick(this):
             minerBot.equipPick()
         else:
             if 1561 - held.durabilityUsed <= 100:
-                minerBot.fixPick()
-
+                if not minerBot.repairPick():
+                    stop()
 
         # Make cobblex
         if minerBot.bot.inventory.count(21) >= 640:
             minerBot.makeCobblex()
 
         # Empty inventory
-        global minPassed
         if minPassed:
             minerBot.emptyInventory(cobblex)
             minPassed = False
-        
+
         # miner
         block = minerBot.bot.blockAtCursor(5)
         if block == None:
-            return
+            continue
         if block.stateId == None:
-            return
+            continue
 
         @AsyncTask(start=True)
         def mine(task):
@@ -139,16 +167,10 @@ def tick(this):
             except Exception as e:
                 pass
 
-print("Zaczynam kopać!")
-timer = BackgroundTimer()
-timer.start()
+    time.sleep(0.05)
 
-
-# Prevent script from finishing
-while True:
-    input = input("Wpisz stop aby zakończyć kopanie!: \n")
-    if input == "stop":
-        minerBot.bot.quit()
-        exit(0)
-
+    # input = input("Wpisz stop aby zakończyć kopanie!: \n")
+    # if input == "stop":
+    #     minerBot.bot.quit()
+    #     exit(0)
 
