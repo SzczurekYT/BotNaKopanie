@@ -1,5 +1,5 @@
 import math
-from javascript import require, On
+from javascript import require, once
 import time
 
 mineflayer = require("mineflayer")
@@ -98,4 +98,45 @@ class MinerBot:
         else:
             print("Brak kowadła, nie naprawiono kilofa.")
             return False
+    
+    def enchant(self):
+
+        print("Próbuję enchantować!")
+
+        # Check if there is enought xp
+        if self.bot.experience.level < 30: return
+        print("Wystarczająco xp")
+
+        # Find encahnting table
+        block = self.bot.findBlock({"matching": 268, "maxDistance": 5})
+        # Return if theres no one
+        if not block: return
+        print("Jest stół")
+
+        # Ids of items to enchant (iron armour)
+        ids = [746, 747, 748, 749]
+
+        # Get all items to enchant
+        toEnchant = self.bot.inventory.items()
+        toEnchant = list(filter(lambda item: item["type"] in ids, toEnchant))
+
+        # If there is no items to enchant return
+        if not toEnchant: return
+        print("Są itemy")
+
+        # Open enchanting table
+        etable = self.bot.openEnchantmentTable(block)
+        print("Otworzono stół")
+
+        # Wait for enchantments to populate
+        once(etable, "ready")
+        print("Ready")
+
+        # Put first item in etable
+        etable.putTargetItem(toEnchant[0])
+        print("Wsadzono itemek")
+
+        # Print enchants
+        print(etable.enchantments)
+
 

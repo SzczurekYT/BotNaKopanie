@@ -128,7 +128,11 @@ timer.start()
 yaw = minerBot.bot.entity.yaw
 minerBot.bot.look(yaw, 0, False)
 
+minerBot.enchant()
+
 while True:
+
+    break
 
     targetBlock = minerBot.bot.targetDigBlock
     if not targetBlock:
@@ -148,12 +152,17 @@ while True:
         if minerBot.bot.inventory.count(21) >= 640:
             minerBot.makeCobblex()
 
-        # Empty inventory
+        # If minute passed do periodical things
         if minPassed:
+
+            # Empty inventory
             minerBot.emptyInventory(cobblex)
+
+            minerBot.enchant()
+
             minPassed = False
 
-        # miner
+        # Mine
         block = minerBot.bot.blockAtCursor(5)
         if block == None:
             continue
